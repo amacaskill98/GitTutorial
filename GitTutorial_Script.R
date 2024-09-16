@@ -12,54 +12,54 @@ pacman::p_load(tidyverse, # data manipulation
                svglite)
 
 #' Import data
-df <- read_csv("data/venues_dirty.csv") # proportion patients returning by dose
+df <- read_excel("data/favrests.xlsx") # proportion patients returning by dose
 
 # Group and count venue choices 
 ug <- df %>% 
-  filter(university == "Glasgow")  %>%
-  mutate_at(vars(venue), factor) %>%
-  group_by(venue) %>%
-  dplyr::summarise(n = length(venue))
+  filter(University == "Glasgow")  %>%
+  mutate_at(vars(Restaurant), factor) %>%
+  group_by(Restaurant) %>%
+  dplyr::summarise(n = length(Restaurant))
 
 # make bar plot to show popular choices
-p <- ggplot(data = ug, aes(x = venue, y = n)) +
+p <- ggplot(data = ug, aes(x = Restaurant, y = n)) +
   geom_bar(stat="identity")
 p
 
 # Bit of a mess - lets clean up the data
-table(df$name) # get rid of non-unique names
-table(df$university) # clean up misspellings
+#table(df$name) # get rid of non-unique names
+table(df$University) # clean up misspellings
 
 # examples of cleaning up messy data
-df$venue <- gsub("DM", "Dumpling monkey", df$venue)
+df$Restaurant <- gsub("DM", "Dumpling monkey", df$Restaurant)
 # or
 df <- df %>%
-  dplyr::mutate(venue = recode(venue,
+  dplyr::mutate(Restaurant = recode(Restaurant,
                                'Sound Bitea' = 'Sound Bites',
                                'Sound Bite' = 'Sound Bites',
                                'IHI cafeteria' = 'IHI cafe'))
 
 # save clean data (without overwriting the raw data!)
 if(!dir.exists("outputs")){dir.create("outputs")}
-write.csv(df, file = "outputs/venues_clean.csv", row.names = FALSE)
+write.csv(df, file = "outputs/favrests.xlsx", row.names = FALSE)
 
 # replot
 # make bar plot to show popular choices
 ug <- df %>% 
-  filter(university == "Glasgow")  %>%
-  mutate_at(vars(venue), factor) %>%
-  group_by(venue) %>%
-  summarise(n = length(venue)) %>%
-  ggplot(aes(x = venue, y = n)) +
-  geom_bar(stat="identity")
+  filter(University == "Glasgow")  %>%
+  mutate_at(vars(Restaurant), factor) %>%
+  group_by(Restaurant) %>%
+  summarise(n = length(Restaurant)) %>%
+  ggplot(aes(x = Restaurant, y = n)) 
+  #geom_bar(stat="identity")
 ug
 
 # stacked barplot
 p <- df %>% 
-  group_by(venue, university) %>%
-  summarise(n = length(venue)) %>%
-  ggplot(aes(x = venue, y = n, fill = university)) +
-  geom_bar(stat="identity") + 
+  group_by(Restaurant, University) %>%
+  summarise(n = length(Restaurant)) %>%
+  ggplot(aes(x = Restaurant, y = n, fill = University)) +
+  # geom_bar(stat="identity") + 
   theme_minimal()
 p
 
